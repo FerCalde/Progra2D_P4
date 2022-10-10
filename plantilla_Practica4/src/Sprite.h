@@ -9,6 +9,7 @@
 
 class Sprite
 {
+public:
 	Sprite(const ltex_t* _tex, int _iHframes = 1, int _iVframes = 1);
 	//~Sprite();
 
@@ -105,24 +106,24 @@ class Sprite
 
 };
 
-//
-//class SpriteManager
-//{
-//	public:
-//	SpriteManager();
-//	/*~SpriteManager();
-//
-//	void AddSpriteToList(Sprite* sprite);
-//	void RemoveSpriteFromList(Sprite* sprite);
-//	void AddTextureToArray();
-//	void Update(float deltaTime);
-//	void Draw();
-//	
-//	ltex_t* GenerateTexture(const char* _fileName);*/
-//	
-//	//void LoadTexture(const char* _fileName);
-//
-//
-//	std::vector<Sprite*> m_vSpriteArray;
-//	std::vector<ltex_t*> m_vTextureArray;
-//};
+
+class SpriteManager
+{
+	public:
+	SpriteManager(){}
+	/*~SpriteManager();
+
+	void AddSpriteToList(Sprite* sprite);
+	void RemoveSpriteFromList(Sprite* sprite);
+	void AddTextureToArray();
+	void Update(float deltaTime);
+	void Draw();
+	
+	ltex_t* GenerateTexture(const char* _fileName);*/
+	
+	void LoadTexture(const char* _fileName);
+	void UnloadTextures();
+
+	std::vector<Sprite*> m_vSpriteArray;
+	std::vector<ltex_t*> m_vTextureArray;
+};

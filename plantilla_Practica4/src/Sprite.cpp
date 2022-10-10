@@ -1,5 +1,6 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include "Sprite.h"
-//#include <litegfx.h>
 #include "stb_image.h"
 
 
@@ -207,25 +208,33 @@ void Sprite::SetCurrentFrame(int _iFrame)
 ////	return  textureCreated;
 ////}
 //
-//void SpriteManager::LoadTexture(const char* _fileName)
-//{
-//	int* widthImgSize = new int;
-//	int* heightImgSize = new int;
-//	//Carga de ficheros de imagen
-//	unsigned char* bufferImg = stbi_load(_fileName, widthImgSize, heightImgSize, nullptr, 4); //Datos de la imagen
-//	
-//	if (bufferImg)
-//	{
-//		ltex_t* textureCreated = ltex_alloc(*widthImgSize, *heightImgSize, 1); //Generacion de la textura
-//
-//		ltex_setpixels(textureCreated, bufferImg); //Volcado de los pixeles en la VRAM
-//
-//		stbi_image_free(bufferImg); //Eliminar el buffer creado anteriormente, ya he pasado los datos a la imagen que quiero crear (Creada la textura)
-//		//return  textureCreated;
-//		m_vTextureArray.push_back(textureCreated);
-//	}
-//	else
-//	{
-//		printf("ERROR! No se ha podido cargar el archivo!");
-//	}
-//}
+void SpriteManager::LoadTexture(const char* _fileName)
+{
+	int* widthImgSize = new int;
+	int* heightImgSize = new int;
+	//Carga de ficheros de imagen
+	unsigned char* bufferImg = stbi_load(_fileName, widthImgSize, heightImgSize, nullptr, 4); //Datos de la imagen
+	
+	if (bufferImg)
+	{
+		ltex_t* textureCreated = ltex_alloc(*widthImgSize, *heightImgSize, 1); //Generacion de la textura
+
+		ltex_setpixels(textureCreated, bufferImg); //Volcado de los pixeles en la VRAM
+
+		stbi_image_free(bufferImg); //Eliminar el buffer creado anteriormente, ya he pasado los datos a la imagen que quiero crear (Creada la textura)
+		//return  textureCreated;
+		m_vTextureArray.push_back(textureCreated);
+	}
+	else
+	{
+		printf("ERROR! No se ha podido cargar el archivo!");
+	}
+}
+
+void SpriteManager::UnloadTextures()
+{
+	for (ltex_t* texLoaded : m_vTextureArray)
+	{
+		ltex_free(texLoaded);
+	}
+}
