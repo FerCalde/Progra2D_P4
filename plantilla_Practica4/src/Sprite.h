@@ -55,7 +55,7 @@ public:
 
 #pragma region Transform
 	MyVec2D m_Position;
-	float m_fAngle;
+	float m_fRotation;
 	MyVec2D m_Scale;
 	
 	MyVec2D m_Pivot;
@@ -64,9 +64,8 @@ public:
 	void SetPosition(const MyVec2D& _pos);
 	void SetPosition(float _posX, float _posY);
 
-
-	float GetAngle() const;
-	void SetAngle(float _fAngle);
+	float GetRotation() const;
+	void SetRotation(float _fAngle);
 
 	const MyVec2D& GetScale() const;
 	void SetScale(const MyVec2D& _scale);
@@ -81,6 +80,13 @@ public:
 	const MyVec2D& GetPivot() const;
 	void SetPivot(const MyVec2D& _pivot);
 	void SetPivot(float _fPivotX, float _fPivotY);
+
+	const float m_fSpeedMovement = 128.f;
+	const float GetSpeedMovement() const;
+	const float m_fSpeedRotation = 15.f;
+	const float GetSpeedRotation() const;
+	const float m_fAngleRotationMax = 15.f;
+	const float GetAngleRotationMax() const;
 
 #pragma endregion Transform
 
@@ -118,8 +124,8 @@ class SpriteManager
 	void AddTextureToArray();
 	void Update(float deltaTime);
 	void Draw();
-	
-	ltex_t* GenerateTexture(const char* _fileName);*/
+	*/
+	ltex_t* GenerateTexture(const char* _fileName);
 	
 	void LoadTexture(const char* _fileName);
 	void UnloadTextures();

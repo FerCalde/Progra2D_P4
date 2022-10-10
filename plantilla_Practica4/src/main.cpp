@@ -33,6 +33,7 @@ MyVec2D myCursorPos;
 double mouseXpos(0);
 double mouseYpos(0);
 
+float fToleranceMovement = 1.f;
 
 
 
@@ -157,8 +158,6 @@ int main()
 
 			//Render IMGs////
 			//------Render BEE
-			//lgfx_setblend(BLEND_ALPHA);
-			//ltex_draw(ptrBee->GetTexture(), myCursorPos.x, myCursorPos.y);
 
 			ptrBee->Draw();
 
@@ -244,7 +243,80 @@ int main()
 
 	return 0;
 }
-void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime) 
+void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime)
 {
-	_sprite.SetPosition(myCursorPos);
+	//Way to Transform object follow this rule: Scale -> Rotate -> Traslate
+
+		//Scale Update
+	_sprite.SetScale(_sprite.GetScale());
+
+	//Rotation Update
+	
+	//@TODO: CORREGIR ROTATION
+	MyVec2D dir = (myCursorPos - _sprite.GetPosition());
+
+	bool bIsMoving = false;
+	if (dir.Magnitude() >= fToleranceMovement)
+	{
+		bIsMoving = true;
+	}
+	std::cout << dir.x << " X VALUEEEE\n";
+	float newRotation = 0.f;
+	bool bRightRotation = false;
+	if (bIsMoving)
+	{
+		if (dir.x > fToleranceMovement)
+		{
+			bRightRotation = true;
+		}
+		else if (dir.x < (-fToleranceMovement))
+		{
+			bRightRotation = false;
+		}
+	}
+	else
+	{
+		if (_sprite.GetRotation() < 1.f && _sprite.GetRotation() > -1.f)
+		{
+
+		}
+		if (dir.x <= fToleranceMovement && dir.x >= (-fToleranceMovement))
+		{
+			bRightRotation = true;
+		}
+		else if (dir.x < (-fToleranceMovement))
+		{
+			bRightRotation = false;
+		}
+	}
+
+	newRotation = _sprite.GetRotation() + (_sprite.GetSpeedRotation() * _fDeltaTime);
+	
+	if (bIsMoving)
+	{
+		if (!bRightRotation && newRotation <= (-_sprite.m_fAngleRotationMax)) /*if (newRotation < (-_sprite.GetAngleRotationMax()))*/ //Se entiende Peor
+		{
+			newRotation = (-_sprite.m_fAngleRotationMax);
+		}
+		else if (bRightRotation && newRotation >= _sprite.m_fAngleRotationMax)
+		{
+			newRotation = _sprite.m_fAngleRotationMax;
+		}
+	}
+
+	_sprite.SetRotation(newRotation);
+
+	//Position Update
+	MyVec2D currentPos(_sprite.GetPosition());
+	dir.Normalize();
+	MyVec2D newPos = currentPos + (dir * _sprite.GetSpeedMovement() * _fDeltaTime);
+
+	if (bIsMoving)
+	{
+		_sprite.SetPosition(newPos);
+
+	}
+
+	//std::cout << "CallbackUpdateSprite \n";
+
 }

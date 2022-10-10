@@ -44,7 +44,7 @@ void Sprite::Draw() const
 	
 	lgfx_setblend(GetBlend());
 	//ltex_draw(GetTexture(), GetPosition().x, GetPosition().y);
-	ltex_drawrotsized(GetTexture(), GetPosition().x, GetPosition().y, GetAngle(), GetPivot().x, GetPivot().y, 100, 100, u0, v0, u1, v1);
+	ltex_drawrotsized(GetTexture(), GetPosition().x, GetPosition().y, GetRotation(), GetPivot().x, GetPivot().y, GetSize().x, GetSize().y, u0, v0, u1, v1);
 }
 
 void Sprite::SetCallback(CallbackFunc _func)
@@ -108,7 +108,7 @@ void Sprite::SetColor(float _r, float _g, float _b, float _a)
 	m_fRed = _r;
 	m_fGreen = _g;
 	m_fBlue = _b;
-	m_fAngle = _a;
+	m_fRotation = _a;
 }
 
 const MyVec2D& Sprite::GetPosition() const
@@ -127,14 +127,14 @@ void Sprite::SetPosition(float _posX, float _posY)
 	m_Position.y = _posY;
 }
 
-float Sprite::GetAngle() const
+float Sprite::GetRotation() const
 {
-	return m_fAngle;
+	return m_fRotation;
 }
 
-void Sprite::SetAngle(float _fAngle)
+void Sprite::SetRotation(float _fAngle)
 {
-	m_fAngle = _fAngle;
+	m_fRotation = _fAngle;
 }
 
 const MyVec2D& Sprite::GetScale() const
@@ -188,6 +188,21 @@ void Sprite::SetPivot(float _fPivotX, float _fPivotY)
 	m_Pivot.y = _fPivotY;
 }
 
+const float Sprite::GetSpeedMovement() const
+{
+	return m_fSpeedMovement;
+}
+
+const float Sprite::GetSpeedRotation() const
+{
+	return m_fSpeedRotation;
+}
+
+const float Sprite::GetAngleRotationMax() const
+{
+	return m_fAngleRotationMax;
+}
+
 int Sprite::GetHframes() const
 {
 	return m_iHframes;
@@ -220,29 +235,31 @@ void Sprite::SetCurrentFrame(int _iFrame)
 }
 
 
-//
-//
-////ltex_t* SpriteManager::GenerateTexture(const char* _fileName)
-////{
-////	int* widthImgSize = new int;
-////	int* heightImgSize = new int;
-////	//Carga de ficheros de imagen
-////	unsigned char* bufferImg = stbi_load(_fileName, widthImgSize, heightImgSize, nullptr, 4); //Datos de la imagen
-////	if (!bufferImg)
-////	{
-////		printf("ERROR! No se ha podido cargar el archivo!");
-////
-////		return nullptr; //ERROR! No se ha podido cargar el archivo!
-////	}
-////
-////	ltex_t* textureCreated = ltex_alloc(*widthImgSize, *heightImgSize, 1); //Generacion de la textura
-////
-////	ltex_setpixels(textureCreated, bufferImg); //Volcado de los pixeles en la VRAM
-////
-////	stbi_image_free(bufferImg); //Eliminar el buffer creado anteriormente, ya he pasado los datos a la imagen que quiero crear (Creada la textura)
-////	return  textureCreated;
-////}
-//
+
+
+ltex_t* SpriteManager::GenerateTexture(const char* _fileName)
+{
+	int* widthImgSize = new int;
+	int* heightImgSize = new int;
+	//Carga de ficheros de imagen
+	unsigned char* bufferImg = stbi_load(_fileName, widthImgSize, heightImgSize, nullptr, 4); //Datos de la imagen
+	if (!bufferImg)
+	{
+		printf("ERROR! No se ha podido cargar el archivo!");
+
+		return nullptr; //ERROR! No se ha podido cargar el archivo!
+	}
+
+	ltex_t* textureCreated = ltex_alloc(*widthImgSize, *heightImgSize, 1); //Generacion de la textura
+
+	ltex_setpixels(textureCreated, bufferImg); //Volcado de los pixeles en la VRAM
+
+	stbi_image_free(bufferImg); //Eliminar el buffer creado anteriormente, ya he pasado los datos a la imagen que quiero crear (Creada la textura)
+	m_vTextureArray.push_back(textureCreated);
+	
+	return  textureCreated;
+}
+
 void SpriteManager::LoadTexture(const char* _fileName)
 {
 	int* widthImgSize = new int;
@@ -257,7 +274,6 @@ void SpriteManager::LoadTexture(const char* _fileName)
 		ltex_setpixels(textureCreated, bufferImg); //Volcado de los pixeles en la VRAM
 
 		stbi_image_free(bufferImg); //Eliminar el buffer creado anteriormente, ya he pasado los datos a la imagen que quiero crear (Creada la textura)
-		//return  textureCreated;
 		m_vTextureArray.push_back(textureCreated);
 	}
 	else
