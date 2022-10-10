@@ -18,8 +18,8 @@ using namespace std;
 
 
 /* VARIABLES PRACTICA 1*/
-int weightWind = 1920;
-int heightWind = 1080;
+int weightWindowScreen = 1920;
+int heightWindowScreen = 1080;
 GLFWwindow* myWindow;
 
 double currentTime;
@@ -30,10 +30,8 @@ double fixedTick = 0.016; // 1/60 para que sean 60 fps
 double dangerTicks = 1 / 15;
 
 
-/* Funciones Practica 2 */
-
-ltex_t* loadTexture(const char* _fileName);
-
+/* VARIABLES PRACTICA 4*/
+const char* bee_fileName = "data/bee_anim.png";
 
 
 int main()
@@ -46,7 +44,7 @@ int main()
 
 		printf("CORRECTA INICIALIZACION GLFW lib\n");
 		//Crear Ventana
-		myWindow = (glfwCreateWindow(weightWind, heightWind, "HelloWorldText", nullptr, nullptr));
+		myWindow = (glfwCreateWindow(weightWindowScreen, heightWindowScreen, "HelloWorldWindowed", nullptr, nullptr));
 
 		//Cambiar nombre a la ventana
 		glfwSetWindowTitle(myWindow, "Practica4 FerCalderon");
@@ -54,14 +52,13 @@ int main()
 		//Asociar contexto OpenGL a ventana
 		glfwMakeContextCurrent(myWindow);
 
-		lgfx_setup2d(weightWind, heightWind);
+		lgfx_setup2d(weightWindowScreen, heightWindowScreen);
 
 		MyVec2D myCursorPos;
 
 		previousTime = glfwGetTime();
 
 		//Carga de ficheros de Fuentes
-
 
 #pragma region LOAD_FONTS
 
@@ -81,31 +78,25 @@ int main()
 		//auxFont = nullptr;
 
 #pragma endregion LOAD_FONTS
-		
+
 #pragma region LOAD_TEXTURES
 
-		//ptr Textures 
-		/*ltex_t* wall_texture = loadTexture(wall_fileName);
-		ltex_t* fire_texture = loadTexture(fire_fileName);
-		ltex_t* grille_texture = loadTexture(grille_fileName);
-		ltex_t* light_texture = loadTexture(light_fileName);*/
-
-
 		SpriteManager* ptrSpriteManager = new SpriteManager();
-		ptrSpriteManager->LoadTexture("data/bee_anim.png");
+		ptrSpriteManager->LoadTexture(bee_fileName);
 		std::cout << "Creacion ptrSpriteManager\n";
+#pragma endregion LOAD_TEXTURES
 
-		Sprite* ptrBee = new Sprite(ptrSpriteManager->m_vTextureArray[0]);
+		//Sprite Bee created
+		Sprite* ptrBee = new Sprite(ptrSpriteManager->m_vTextureArray[0], 8, 1);
+		ptrBee->SetFPS(8);
+		ptrBee->SetBlend(BLEND_ALPHA);
+		MyVec2D beeInitialPos(weightWindowScreen * 0.5f, heightWindowScreen * 0.5f);
+		ptrBee->SetPosition(beeInitialPos);
 		std::cout << "Creacion ptrBee\n";
 
-		
-
-		//END Carga de ficheros de imagen
-#pragma endregion LOAD_TEXTURES
 
 		while (glfwWindowShouldClose(myWindow) != 1)
 		{
-
 
 			//Actualizar deltaTiempo
 			currentTime = glfwGetTime();
@@ -133,7 +124,7 @@ int main()
 				{
 					////if (FontDrawableList.size() < 5) 
 					//{
-					//	FontDrawable* auxtext = new FontDrawable(weightWind, (rand() % heightWind + 1));
+					//	FontDrawable* auxtext = new FontDrawable(weightWindowScreen, (rand() % heightWindowScreen + 1));
 					//	auxtext->SetRGB(rand() % 256, rand() % 256, rand() % 256);
 					//	auxtext->SetText(text_HelloWorld);
 					//	auxtext->SetFont(ptrFontManager->m_LoadedFontArray[rand() % 2]);
@@ -147,7 +138,7 @@ int main()
 				}
 
 				////LOGICA TEXTOS! UPDATE POSITION Y Detectar Limite para eliminar
-				 
+
 				//for (int i = 0; i < FontDrawableList.size(); i++)
 				//{
 				//	if (FontDrawableList[i])
@@ -178,16 +169,20 @@ int main()
 			//---------------------------------RENDER WINDOW-----------------------------------//////
 
 			std::cout << "RENDER Loop\n";
-			
+
 			//Borrar el backbuffer
 			lgfx_clearcolorbuffer(1.f, 1.f, 1.f);
 
-
-			//RENDER TEXTOS*****************************************
-			 
+			//Render IMGs////
+			//------Render BEE
 			lgfx_setblend(BLEND_ALPHA);
+			ltex_draw(ptrBee->GetTexture(), beeInitialPos.x, beeInitialPos.y);
 			
-			/*for (int i = 0; i < FontDrawableList.size(); i++)
+			
+			/*
+			//RENDER TEXTOS*****************************************
+			lgfx_setblend(BLEND_ALPHA);
+			for (int i = 0; i < FontDrawableList.size(); i++)
 			{
 				if (FontDrawableList[i])
 				{
@@ -213,40 +208,41 @@ int main()
 		delete ptrBee;
 		ptrBee = nullptr;
 		std::cout << "Liberar ptrBee \n";
-		
+
 		ptrSpriteManager->UnloadTextures();
 		delete ptrSpriteManager;
 		ptrSpriteManager = nullptr;
 		std::cout << "Liberar ptrSpriteManager  \n";
-		
+
 		/*ltex_free(wall_texture);
 		ltex_free(fire_texture);
 		ltex_free(grille_texture);
 		ltex_free(light_texture);
 */
-		//Elimino los obj de palabras (lo que realmente se pinta)
-		//std::cout << "Liberar el array de Fuentes Cargadas  \n";
-		/*for (int i = 0; i < FontDrawableList.size(); i++)
-		{
-			if (FontDrawableList[i])
-			{
+/*
+//Elimino los obj de palabras (lo que realmente se pinta)
+//std::cout << "Liberar el array de Fuentes Cargadas  \n";
+for (int i = 0; i < FontDrawableList.size(); i++)
+{
+	if (FontDrawableList[i])
+	{
 
-			delete FontDrawableList[i];
-			FontDrawableList.erase(FontDrawableList.begin() + i);
-			}
-		}*/
-		//FontDrawableList = nullptr;
-		/*for (int i = 0; i < ptrFontManager->m_LoadedFontArray.size(); i++)
-		{
-			delete ptrFontManager->m_LoadedFontArray[i];
-			ptrFontManager->m_LoadedFontArray.erase(ptrFontManager->m_LoadedFontArray.begin() + i);
-		}*/
-		//std::cout << "Liberar ptr FontManager  \n";
-		//delete ptrFontManager;
-		//ptrFontManager = nullptr;
-		//std::cout << "Liberado HelloWorld  \n";
-		//delete text_HelloWorld;
-		//text_HelloWorld = nullptr;
+	delete FontDrawableList[i];
+	FontDrawableList.erase(FontDrawableList.begin() + i);
+	}
+}
+FontDrawableList = nullptr;
+for (int i = 0; i < ptrFontManager->m_LoadedFontArray.size(); i++)
+{
+	delete ptrFontManager->m_LoadedFontArray[i];
+	ptrFontManager->m_LoadedFontArray.erase(ptrFontManager->m_LoadedFontArray.begin() + i);
+}
+//std::cout << "Liberar ptr FontManager  \n";
+//delete ptrFontManager;
+//ptrFontManager = nullptr;
+//std::cout << "Liberado HelloWorld  \n";
+//delete text_HelloWorld;
+//text_HelloWorld = nullptr;*/
 
 		std::cout << "Terminar GLFW \n";
 		glfwTerminate();
@@ -260,29 +256,9 @@ int main()
 	}
 
 	std::cout << "Todo liberado, Procedo a cerrar la App \n";
+
 	//Liberar recursos
-	//glfwTerminate();
+	//glfwTerminate(); // Ya liberada antes de cerrar la app
+
 	return 0;
 }
-
-//ltex_t* loadTexture(const char* _fileName)
-//{
-//	int* widthImgSize = new int;
-//	int* heightImgSize = new int;
-//	//Carga de ficheros de imagen
-//	unsigned char* bufferImg = stbi_load(_fileName, widthImgSize, heightImgSize, nullptr, 4); //Datos de la imagen
-//	if (!bufferImg)
-//	{
-//		printf("ERROR! No se ha podido cargar el archivo!");
-//
-//		return nullptr; //ERROR! No se ha podido cargar el archivo!
-//	}
-//
-//	ltex_t* textureCreated = ltex_alloc(*widthImgSize, *heightImgSize, 1); //Generacion de la textura
-//
-//	ltex_setpixels(textureCreated, bufferImg); //Volcado de los pixeles en la VRAM
-//
-//	stbi_image_free(bufferImg); //Eliminar el buffer creado anteriormente, ya he pasado los datos a la imagen que quiero crear (Creada la textura)
-//	return  textureCreated;
-//}
-//
