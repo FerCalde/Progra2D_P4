@@ -35,13 +35,12 @@ public:
 	const ltex_t* GetTexture() const;
 	void SetTexture(const ltex_t* _tex, int _iHframes = 1, int _iVframes = 1);
 
+	void SetSizeUVAnimFrame();
+	MyVec2D m_SizeUVAnimFrame;
 
 	lblend_t m_blendMode;
 	lblend_t GetBlend() const;
 	void SetBlend(lblend_t _mode);
-
-
-
 
 	float m_fRed = 0;
 	float m_fGreen = 0;
@@ -64,8 +63,6 @@ public:
 	const MyVec2D& GetPosition() const;
 	void SetPosition(const MyVec2D& _pos);
 	void SetPosition(float _posX, float _posY);
-	
-
 
 
 	float GetAngle() const;
@@ -97,7 +94,10 @@ public:
 	int m_iFPS;
 	int GetFPS() const;
 	void SetFPS(int _iFPS);
-
+	
+	float m_tickPerFPS = 1.0f / m_iFPS;
+	float elapsedTickFPS = 0;
+	
 	//Current animation Frame
 	float m_fCurrentFrame;
 	float GetCurrentFrame() const;
@@ -123,6 +123,9 @@ class SpriteManager
 	
 	void LoadTexture(const char* _fileName);
 	void UnloadTextures();
+
+	void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime);
+	
 
 	std::vector<Sprite*> m_vSpriteArray;
 	std::vector<ltex_t*> m_vTextureArray;

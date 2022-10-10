@@ -29,7 +29,7 @@ double* delt = nullptr;
 double fixedTick = 0.016; // 1/60 para que sean 60 fps
 double dangerTicks = 1 / 15;
 
-
+MyVec2D myCursorPos;
 double mouseXpos(0);
 double mouseYpos(0);
 
@@ -40,6 +40,7 @@ double mouseYpos(0);
 /* VARIABLES PRACTICA 4*/
 const char* bee_fileName = "data/bee_anim.png";
 
+void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime);
 
 int main()
 {
@@ -61,7 +62,7 @@ int main()
 
 		lgfx_setup2d(weightWindowScreen, heightWindowScreen);
 
-		MyVec2D myCursorPos;
+		//MyVec2D myCursorPos;
 
 		previousTime = glfwGetTime();
 
@@ -86,7 +87,7 @@ int main()
 
 #pragma endregion LOAD_FONTS
 
-		
+
 #pragma region LOAD_TEXTURES
 
 		SpriteManager* ptrSpriteManager = new SpriteManager();
@@ -99,11 +100,12 @@ int main()
 		ptrBee->SetBlend(BLEND_ALPHA);
 		MyVec2D beeInitialPos(weightWindowScreen * 0.5f, heightWindowScreen * 0.5f);
 		ptrBee->SetPosition(beeInitialPos);
+		ptrBee->SetCallback(&CallbackUpdateSprite);
 		std::cout << "Creacion ptrBee\n";
 
 #pragma endregion LOAD_TEXTURES
 
-		
+
 		while (glfwWindowShouldClose(myWindow) != 1)
 		{
 
@@ -155,8 +157,8 @@ int main()
 
 			//Render IMGs////
 			//------Render BEE
-			lgfx_setblend(BLEND_ALPHA);
-			ltex_draw(ptrBee->GetTexture(), myCursorPos.x, myCursorPos.y);
+			//lgfx_setblend(BLEND_ALPHA);
+			//ltex_draw(ptrBee->GetTexture(), myCursorPos.x, myCursorPos.y);
 
 			ptrBee->Draw();
 
@@ -185,7 +187,7 @@ int main()
 		}
 
 		//Liberar recursos
-		
+
 #pragma region UNLOAD_TEXTURES
 		ptrBee->m_texture = nullptr;
 		delete ptrBee;
@@ -206,7 +208,7 @@ int main()
 		{
 			if (FontDrawableList[i])
 			{
-		
+
 			delete FontDrawableList[i];
 			FontDrawableList.erase(FontDrawableList.begin() + i);
 			}
@@ -237,9 +239,12 @@ int main()
 	}
 
 	std::cout << "Todo liberado, Procedo a cerrar la App \n";
-
 	//Liberar recursos
 	//glfwTerminate(); // Ya liberada antes de cerrar la app
 
 	return 0;
+}
+void CallbackUpdateSprite(Sprite& _sprite, float _fDeltaTime) 
+{
+	_sprite.SetPosition(myCursorPos);
 }
