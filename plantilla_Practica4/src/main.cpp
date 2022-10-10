@@ -30,6 +30,13 @@ double fixedTick = 0.016; // 1/60 para que sean 60 fps
 double dangerTicks = 1 / 15;
 
 
+double mouseXpos(0);
+double mouseYpos(0);
+
+
+
+
+
 /* VARIABLES PRACTICA 4*/
 const char* bee_fileName = "data/bee_anim.png";
 
@@ -79,12 +86,12 @@ int main()
 
 #pragma endregion LOAD_FONTS
 
+		
 #pragma region LOAD_TEXTURES
 
 		SpriteManager* ptrSpriteManager = new SpriteManager();
 		ptrSpriteManager->LoadTexture(bee_fileName);
 		std::cout << "Creacion ptrSpriteManager\n";
-#pragma endregion LOAD_TEXTURES
 
 		//Sprite Bee created
 		Sprite* ptrBee = new Sprite(ptrSpriteManager->m_vTextureArray[0], 8, 1);
@@ -94,7 +101,9 @@ int main()
 		ptrBee->SetPosition(beeInitialPos);
 		std::cout << "Creacion ptrBee\n";
 
+#pragma endregion LOAD_TEXTURES
 
+		
 		while (glfwWindowShouldClose(myWindow) != 1)
 		{
 
@@ -118,42 +127,13 @@ int main()
 
 
 				//------------------   UPDATE LOGIC!------------------------------ //////////////////////////////////////////////////
-				//CREATE NEW TEXT TO RENDER
-				int randomTextSpawn = rand() % 101;
-				if (randomTextSpawn == 0)
-				{
-					////if (FontDrawableList.size() < 5) 
-					//{
-					//	FontDrawable* auxtext = new FontDrawable(weightWindowScreen, (rand() % heightWindowScreen + 1));
-					//	auxtext->SetRGB(rand() % 256, rand() % 256, rand() % 256);
-					//	auxtext->SetText(text_HelloWorld);
-					//	auxtext->SetFont(ptrFontManager->m_LoadedFontArray[rand() % 2]);
-					//	float randomSpeed = 20.f + rand() % 181;
-					//	auxtext->SetSpeed(randomSpeed);
-					//	//std::cout << "Creado " << sizeof(auxtext) << "\n";
-					//	std::cout << "Creado unidad " << FontDrawableList.size() << "\n";
-					//	
-					//	FontDrawableList.push_back(auxtext);
-					//}
-				}
+				//Posicion del raton
+				glfwGetCursorPos(myWindow, &mouseXpos, &mouseYpos);
+				myCursorPos.x = mouseXpos;
+				myCursorPos.y = mouseYpos;
 
-				////LOGICA TEXTOS! UPDATE POSITION Y Detectar Limite para eliminar
-
-				//for (int i = 0; i < FontDrawableList.size(); i++)
-				//{
-				//	if (FontDrawableList[i])
-				//	{
-				//		FontDrawableList[i]->UpdatePos(deltaTime);
-				//		if (FontDrawableList[i]->GetPos().x < -400) //Mas o menos es el tamaño del texto, usado para cuando sale de la pantalla
-				//		{
-				//			//std::cout << "Antes contiene " << FontDrawableList.size() << "\n";
-				//			delete FontDrawableList[i];
-				//			FontDrawableList.erase(FontDrawableList.begin() + i);
-				//			//std::cout << "Ahora tiene " << FontDrawableList.size() << "\n";
-				//		}
-				//	}
-				//}
-
+				////LOGICA Bee! UPDATE POSITION Y Detectar Limite para eliminar
+				ptrBee->Update(deltaTime);
 
 				if (deltaTime >= dangerTicks)
 				{
@@ -176,9 +156,10 @@ int main()
 			//Render IMGs////
 			//------Render BEE
 			lgfx_setblend(BLEND_ALPHA);
-			ltex_draw(ptrBee->GetTexture(), beeInitialPos.x, beeInitialPos.y);
-			
-			
+			ltex_draw(ptrBee->GetTexture(), myCursorPos.x, myCursorPos.y);
+
+			ptrBee->Draw();
+
 			/*
 			//RENDER TEXTOS*****************************************
 			lgfx_setblend(BLEND_ALPHA);
@@ -204,6 +185,8 @@ int main()
 		}
 
 		//Liberar recursos
+		
+#pragma region UNLOAD_TEXTURES
 		ptrBee->m_texture = nullptr;
 		delete ptrBee;
 		ptrBee = nullptr;
@@ -213,36 +196,34 @@ int main()
 		delete ptrSpriteManager;
 		ptrSpriteManager = nullptr;
 		std::cout << "Liberar ptrSpriteManager  \n";
+#pragma endregion UNLOAD_TEXTURES
 
-		/*ltex_free(wall_texture);
-		ltex_free(fire_texture);
-		ltex_free(grille_texture);
-		ltex_free(light_texture);
-*/
-/*
-//Elimino los obj de palabras (lo que realmente se pinta)
-//std::cout << "Liberar el array de Fuentes Cargadas  \n";
-for (int i = 0; i < FontDrawableList.size(); i++)
-{
-	if (FontDrawableList[i])
-	{
-
-	delete FontDrawableList[i];
-	FontDrawableList.erase(FontDrawableList.begin() + i);
-	}
-}
-FontDrawableList = nullptr;
-for (int i = 0; i < ptrFontManager->m_LoadedFontArray.size(); i++)
-{
-	delete ptrFontManager->m_LoadedFontArray[i];
-	ptrFontManager->m_LoadedFontArray.erase(ptrFontManager->m_LoadedFontArray.begin() + i);
-}
-//std::cout << "Liberar ptr FontManager  \n";
-//delete ptrFontManager;
-//ptrFontManager = nullptr;
-//std::cout << "Liberado HelloWorld  \n";
-//delete text_HelloWorld;
-//text_HelloWorld = nullptr;*/
+#pragma region UNLOAD_FONTS
+		/*
+		//Elimino los obj de palabras (lo que realmente se pinta)
+		//std::cout << "Liberar el array de Fuentes Cargadas  \n";
+		for (int i = 0; i < FontDrawableList.size(); i++)
+		{
+			if (FontDrawableList[i])
+			{
+		
+			delete FontDrawableList[i];
+			FontDrawableList.erase(FontDrawableList.begin() + i);
+			}
+		}
+		FontDrawableList = nullptr;
+		for (int i = 0; i < ptrFontManager->m_LoadedFontArray.size(); i++)
+		{
+			delete ptrFontManager->m_LoadedFontArray[i];
+			ptrFontManager->m_LoadedFontArray.erase(ptrFontManager->m_LoadedFontArray.begin() + i);
+		}
+		//std::cout << "Liberar ptr FontManager  \n";
+		//delete ptrFontManager;
+		//ptrFontManager = nullptr;
+		//std::cout << "Liberado HelloWorld  \n";
+		//delete text_HelloWorld;
+		//text_HelloWorld = nullptr;*/
+#pragma endregion UNLOAD_FONTS
 
 		std::cout << "Terminar GLFW \n";
 		glfwTerminate();
