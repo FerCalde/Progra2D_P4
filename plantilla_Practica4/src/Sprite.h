@@ -83,8 +83,9 @@ public:
 
 	const float m_fSpeedMovement = 128.f;
 	const float GetSpeedMovement() const;
-	const float m_fSpeedRotation = 15.f;
+	float m_fSpeedRotation = 15.f;
 	const float GetSpeedRotation() const;
+	const void SetSpeedRotation(float _fSpeedRot);
 	const float m_fAngleRotationMax = 15.f;
 	const float GetAngleRotationMax() const;
 
